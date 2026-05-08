@@ -1,8 +1,6 @@
 <!-- ========================= -->
 <!-- SAVE AS admin.html -->
 <!-- ========================= -->
-
-<!DOCTYPE html>
 <html>
 <head>
 <title>Lemon Crush Admin</title>
