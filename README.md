@@ -68,6 +68,9 @@ table{
 width:100%;
 margin-top:20px;
 border-collapse:collapse;
+background:white;
+border-radius:15px;
+overflow:hidden;
 }
 
 th,td{
@@ -75,6 +78,12 @@ border:2px solid white;
 padding:12px;
 text-align:center;
 font-size:18px;
+color:black;
+background:white;
+}
+
+th{
+background:#ffe066;
 }
 
 .total{
