@@ -2,100 +2,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Lemon Crush Admin</title>
 
 <style>
 body{
-  font-family:Arial, sans-serif;
-  background:linear-gradient(to bottom,#ff1493,#7a007a,#220033);
-  color:white;
-  padding:20px;
-  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom,#ff1493,#7a007a,#220033);
+  color: white;
+  padding: 20px;
+  margin: 0;
 }
-
 h1{
-  text-align:center;
-  font-size:60px;
-  color:yellow;
-  margin:10px 0 20px;
+  text-align: center;
+  font-size: 60px;
+  color: yellow;
+  margin: 10px 0 20px;
 }
-
 .box{
-  background:rgba(255,255,255,0.1);
-  padding:25px;
-  border-radius:25px;
-  margin-top:25px;
+  background: rgba(255,255,255,0.1);
+  padding: 25px;
+  border-radius: 25px;
+  margin-top: 25px;
 }
-
 .card{
-  background:rgba(255,255,255,0.1);
-  padding:20px;
-  border-radius:20px;
-  margin-top:15px;
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 20px;
+  margin-top: 15px;
 }
-
-button{
-  background:red;
-  color:white;
-  border:none;
-  padding:10px 20px;
-  border-radius:12px;
-  margin-top:15px;
-  cursor:pointer;
-  font-size:18px;
-}
-
 .billingInput{
-  width:100%;
-  padding:15px;
-  margin-top:15px;
-  border:none;
-  border-radius:15px;
-  font-size:18px;
-  color:black;
-  background:white;
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 15px;
+  font-size: 18px;
+  color: black;
+  background: white;
 }
-
 .addBtn{
-  background:yellow;
-  color:#ff0088;
-  width:100%;
-  padding:15px;
-  font-size:22px;
-  font-weight:bold;
+  background: yellow;
+  color: #ff0088;
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 20px;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
 }
-
+.deleteBtn{
+  background: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-size: 18px;
+}
 table{
-  width:100%;
-  margin-top:20px;
-  border-collapse:collapse;
-  background:white;
-  border-radius:15px;
-  overflow:hidden;
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
 }
-
-th,td{
-  border:2px solid white;
-  padding:12px;
-  text-align:center;
-  font-size:18px;
-  color:black;
-  background:white;
+th, td{
+  border: 2px solid white;
+  padding: 12px;
+  text-align: center;
+  font-size: 18px;
+  color: black;
+  background: white;
 }
-
 th{
-  background:#ffe066;
+  background: #ffe066;
 }
-
 .total{
-  font-size:30px;
-  color:yellow;
-  margin-top:20px;
-  text-align:center;
+  font-size: 30px;
+  color: yellow;
+  margin-top: 20px;
+  text-align: center;
 }
-
 </style>
 </head>
 
@@ -132,17 +125,12 @@ th{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCONw7aVKww1VdumdYhrJXYA4n3duIAwD8",
   authDomain: "lemon-crush.firebaseapp.com",
+  databaseURL: "https://lemon-crush-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "lemon-crush",
   storageBucket: "lemon-crush.firebasestorage.app",
   messagingSenderId: "149466674530",
@@ -151,48 +139,48 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getDatabase(app);
+const suggestionsRef = ref(db, "suggestions");
 
 const suggestionsDiv = document.getElementById("suggestions");
 
-onSnapshot(collection(db, "suggestions"), (snapshot) => {
+onValue(suggestionsRef, (snapshot) => {
   suggestionsDiv.innerHTML = "";
 
-  if (snapshot.empty) {
+  const data = snapshot.val();
+  if (!data) {
     suggestionsDiv.innerHTML = "<p>No suggestions yet.</p>";
     return;
   }
 
-  snapshot.forEach((docItem) => {
-    const data = docItem.data();
-
-    suggestionsDiv.innerHTML += `
-      <div class="card">
-        <h3>${data.name}</h3>
-        <p>${data.message}</p>
-        <button onclick="deleteSuggestion('${docItem.id}')">Delete</button>
-      </div>
+  Object.entries(data).forEach(([key, value]) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <h3>${value.name ?? ""}</h3>
+      <p>${value.message ?? ""}</p>
+      <button class="deleteBtn">Delete</button>
     `;
+    card.querySelector(".deleteBtn").onclick = async () => {
+      await remove(ref(db, "suggestions/" + key));
+    };
+    suggestionsDiv.appendChild(card);
   });
 });
 
-window.deleteSuggestion = async function(id){
-  await deleteDoc(doc(db, "suggestions", id));
-};
-
 let totalProfit = 0;
 
-window.addBill = function(){
-  let item = document.getElementById("item").value.trim();
-  let price = parseInt(document.getElementById("price").value);
-  let cost = parseInt(document.getElementById("cost").value);
+window.addBill = function () {
+  const item = document.getElementById("item").value.trim();
+  const price = parseInt(document.getElementById("price").value, 10);
+  const cost = parseInt(document.getElementById("cost").value, 10);
 
-  if(!item || !price || !cost){
+  if (!item || !Number.isFinite(price) || !Number.isFinite(cost)) {
     alert("Fill all fields");
     return;
   }
 
-  let profit = price - cost;
+  const profit = price - cost;
   totalProfit += profit;
 
   document.getElementById("billTable").innerHTML += `
@@ -204,7 +192,7 @@ window.addBill = function(){
     </tr>
   `;
 
-  document.getElementById("totalProfit").innerHTML = "Total Profit: ₹" + totalProfit;
+  document.getElementById("totalProfit").textContent = "Total Profit: ₹" + totalProfit;
 
   document.getElementById("item").value = "";
   document.getElementById("price").value = "";
