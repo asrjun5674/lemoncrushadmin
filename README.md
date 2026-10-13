@@ -1,30 +1,41 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lemon Crush Admin</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   background: linear-gradient(to bottom, #ff1493, #7a007a, #220033);
   color: white;
   padding: 20px;
   margin: 0;
+  min-height: 100vh;
 }
+
 h1 {
   text-align: center;
   font-size: clamp(32px, 5vw, 60px);
   color: yellow;
   margin: 10px 0 20px;
 }
+
+h2 {
+  color: yellow;
+}
+
 .box {
   background: rgba(255,255,255,0.1);
   padding: 25px;
   border-radius: 25px;
   margin-top: 25px;
 }
+
 .card {
   background: rgba(255,255,255,0.1);
   padding: 20px;
@@ -32,8 +43,8 @@ h1 {
   margin-top: 15px;
   overflow-wrap: anywhere;
 }
+
 .billingInput {
-  box-sizing: border-box;
   width: 100%;
   padding: 15px;
   margin-top: 15px;
@@ -43,6 +54,7 @@ h1 {
   color: black;
   background: white;
 }
+
 .addBtn {
   background: yellow;
   color: #ff0088;
@@ -51,10 +63,11 @@ h1 {
   margin-top: 20px;
   border: none;
   border-radius: 20px;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   cursor: pointer;
 }
+
 .deleteBtn {
   background: red;
   color: white;
@@ -65,42 +78,63 @@ h1 {
   cursor: pointer;
   font-size: 16px;
 }
+
 table {
   width: 100%;
   margin-top: 20px;
   border-collapse: collapse;
   background: white;
 }
+
 th, td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
   font-size: 15px;
   color: black;
-  background: white;
 }
+
 th {
   background: #ffe066;
 }
+
 .total {
   font-size: 26px;
   color: yellow;
   margin-top: 20px;
   text-align: center;
 }
+
 .result {
   margin-top: 18px;
   padding: 15px;
   background: rgba(0,0,0,0.25);
   border-radius: 15px;
-  line-height: 1.8;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
-.success { color: #aaffaa; }
-.error { color: #ffaaaa; }
+
+.success {
+  color: #aaffaa;
+}
+
+.error {
+  color: #ffaaaa;
+}
+
 @media (max-width: 600px) {
-  body { padding: 10px; }
-  .box { padding: 15px; }
-  th, td { padding: 6px; font-size: 12px; }
+  body {
+    padding: 10px;
+  }
+
+  .box {
+    padding: 15px;
+  }
+
+  th, td {
+    padding: 6px;
+    font-size: 12px;
+  }
 }
 </style>
 </head>
@@ -109,6 +143,7 @@ th {
 
 <h1>🍋 Lemon Crush Admin</h1>
 
+<!-- BILLING SECTION -->
 <div class="box">
   <h2>🧾 Add Billing</h2>
 
@@ -116,7 +151,7 @@ th {
          placeholder="Item Name">
 
   <input type="number" id="price" class="billingInput"
-         placeholder="Original Selling Price (₹)" min="0" step="0.01">
+         placeholder="Selling Price (₹)" min="0" step="0.01">
 
   <input type="number" id="cost" class="billingInput"
          placeholder="Cost Price (₹)" min="0" step="0.01">
@@ -138,26 +173,26 @@ th {
   <div class="total" id="totalProfit">Total Profit: ₹0.00</div>
 </div>
 
-<!-- ADMIN-ONLY DISCOUNT CALCULATOR -->
+<!-- DISCOUNT CODE SECTION -->
 <div class="box">
   <h2>🎟️ Discount Code Manager</h2>
-  <p>Enter a code to calculate the discount on an item's original selling price.</p>
+  <p>Enter a discount code and the original price to calculate the offer.</p>
 
   <div class="card">
-    <h3>💖 Available Discount Codes</h3>
+    <h3>💖 Your Discount Codes</h3>
     <p><strong>HAVECRUSHONLC</strong> — 50% OFF</p>
     <p><strong>RUSHONCRUSH30</strong> — 30% OFF</p>
     <p><strong>LEMONCRUSH10</strong> — 10% OFF</p>
   </div>
 
   <input type="text" id="discountCode" class="billingInput"
-         placeholder="Enter discount code">
+         placeholder="Enter Discount Code">
 
   <input type="number" id="discountPrice" class="billingInput"
          placeholder="Original Price (₹)" min="0" step="0.01">
 
   <button class="addBtn" onclick="calculateDiscount()">
-    Calculate Discount
+    Calculate Discount 💖
   </button>
 
   <div id="discountResult" class="result" aria-live="polite">
@@ -165,15 +200,21 @@ th {
   </div>
 </div>
 
+<!-- CUSTOMER SUGGESTIONS -->
 <div class="box">
   <h2>💌 Customer Suggestions</h2>
   <div id="suggestions">Loading suggestions...</div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
-  getDatabase, ref, onValue, remove
+  getDatabase,
+  ref,
+  onValue,
+  remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -192,8 +233,10 @@ const db = getDatabase(app);
 const suggestionsRef = ref(db, "suggestions");
 const suggestionsDiv = document.getElementById("suggestions");
 
+// LOAD CUSTOMER SUGGESTIONS
 onValue(suggestionsRef, (snapshot) => {
   suggestionsDiv.replaceChildren();
+
   const data = snapshot.val();
 
   if (!data) {
@@ -205,7 +248,6 @@ onValue(suggestionsRef, (snapshot) => {
     const card = document.createElement("div");
     card.className = "card";
 
-    // Use textContent so customer-submitted text is not treated as HTML.
     const name = document.createElement("h3");
     name.textContent = value?.name ?? "Anonymous";
 
@@ -218,6 +260,7 @@ onValue(suggestionsRef, (snapshot) => {
 
     deleteButton.onclick = async () => {
       if (!confirm("Delete this suggestion?")) return;
+
       try {
         await remove(ref(db, "suggestions/" + key));
       } catch (error) {
@@ -230,11 +273,12 @@ onValue(suggestionsRef, (snapshot) => {
     suggestionsDiv.appendChild(card);
   });
 }, (error) => {
-  suggestionsDiv.textContent = "Could not load suggestions. Check Firebase permissions.";
+  suggestionsDiv.textContent =
+    "Could not load suggestions. Check Firebase permissions.";
   console.error(error);
 });
 
-// BILLING
+// BILLING AND PROFIT
 let totalProfit = 0;
 
 window.addBill = function () {
@@ -246,10 +290,16 @@ window.addBill = function () {
   const price = Number(priceInput.value);
   const cost = Number(costInput.value);
 
-  if (!item || priceInput.value === "" || costInput.value === "" ||
-      !Number.isFinite(price) || !Number.isFinite(cost) ||
-      price < 0 || cost < 0) {
-    alert("Enter an item name and valid non-negative prices.");
+  if (
+    !item ||
+    priceInput.value === "" ||
+    costInput.value === "" ||
+    !Number.isFinite(price) ||
+    !Number.isFinite(cost) ||
+    price < 0 ||
+    cost < 0
+  ) {
+    alert("Please fill all fields with valid prices.");
     return;
   }
 
@@ -258,15 +308,19 @@ window.addBill = function () {
 
   const row = document.createElement("tr");
 
-  [item, money(price), money(cost), money(profit)].forEach((value) => {
+  [item, price, cost, profit].forEach((value) => {
     const cell = document.createElement("td");
-    cell.textContent = typeof value === "number"
-      ? "₹" + value.toFixed(2)
-      : value;
+
+    cell.textContent =
+      typeof value === "number"
+        ? "₹" + value.toFixed(2)
+        : value;
+
     row.appendChild(cell);
   });
 
   document.getElementById("billTable").appendChild(row);
+
   document.getElementById("totalProfit").textContent =
     "Total Profit: ₹" + totalProfit.toFixed(2);
 
@@ -275,27 +329,26 @@ window.addBill = function () {
   costInput.value = "";
 };
 
-function money(value) {
-  return Number(value);
-}
-
-// DISCOUNT CODES — ADMIN CALCULATOR
+// DISCOUNT CODES
 const discountCodes = {
-  "HAVECRUCHONLC": 50,
-  "LEMONCRUSH30": 30,
+  "HAVECRUSHONLC": 50,
+  "RUSHONCRUSH30": 30,
   "LEMONCRUSH10": 10
 };
 
 window.calculateDiscount = function () {
   const code = document.getElementById("discountCode")
     .value.trim().toUpperCase();
+
   const priceField = document.getElementById("discountPrice");
   const result = document.getElementById("discountResult");
 
+  result.replaceChildren();
   result.className = "result";
 
   if (!code || priceField.value === "") {
-    result.textContent = "Please enter a discount code and original price.";
+    result.textContent =
+      "Please enter a discount code and original price.";
     result.classList.add("error");
     return;
   }
@@ -303,13 +356,14 @@ window.calculateDiscount = function () {
   const price = Number(priceField.value);
 
   if (!Number.isFinite(price) || price < 0) {
-    result.textContent = "Please enter a valid, non-negative price.";
+    result.textContent = "Please enter a valid price.";
     result.classList.add("error");
     return;
   }
 
   if (!Object.prototype.hasOwnProperty.call(discountCodes, code)) {
-    result.textContent = "❌ Invalid discount code. Please check the code.";
+    result.textContent =
+      "❌ Invalid code! Please check your discount code.";
     result.classList.add("error");
     return;
   }
@@ -319,19 +373,18 @@ window.calculateDiscount = function () {
   const finalPrice = price - discountAmount;
 
   result.classList.add("success");
-  result.replaceChildren();
 
-  const lines = [
-    "✅ Valid discount code: " + code,
-    "Discount: " + percentage + "%",
-    "Original price: ₹" + price.toFixed(2),
-    "You save: ₹" + discountAmount.toFixed(2),
-    "Customer pays: ₹" + finalPrice.toFixed(2)
+  const details = [
+    "✅ Valid Discount Code: " + code,
+    "Discount Percentage: " + percentage + "%",
+    "Original Price: ₹" + price.toFixed(2),
+    "Discount Amount: ₹" + discountAmount.toFixed(2),
+    "Final Price After Discount: ₹" + finalPrice.toFixed(2)
   ];
 
-  lines.forEach((line) => {
+  details.forEach((detail) => {
     const paragraph = document.createElement("p");
-    paragraph.textContent = line;
+    paragraph.textContent = detail;
     result.appendChild(paragraph);
   });
 };
