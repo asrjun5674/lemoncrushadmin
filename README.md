@@ -1,5 +1,3 @@
-```html
-<!-- SAVE AS admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
