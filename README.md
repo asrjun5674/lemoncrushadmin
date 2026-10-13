@@ -145,8 +145,8 @@ th {
 
   <div class="card">
     <h3>💖 Available Discount Codes</h3>
-    <p><strong>HAVECRUCHONLC</strong> — 50% OFF</p>
-    <p><strong>LEMONCRUSH30</strong> — 30% OFF</p>
+    <p><strong>HAVECRUSHONLC</strong> — 50% OFF</p>
+    <p><strong>RUSHONCRUSH30</strong> — 30% OFF</p>
     <p><strong>LEMONCRUSH10</strong> — 10% OFF</p>
   </div>
 
