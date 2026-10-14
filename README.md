@@ -120,8 +120,8 @@ const phoneKey = phone => String(phone || '').replace(/\D/g, '');
 const money = value => '₹' + Number(value || 0).toFixed(2);
 const makeId = () => (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
 // Change these credentials before deploying to GitHub Pages. This is a UI lock only.
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = '1234';
+const ADMIN_USERNAME = 'LCA ARJUN';
+const ADMIN_PASSWORD = 'LCACEO123';
 const LOGIN_SESSION_KEY = 'lemonCrushAdminLoggedIn_v1';
 let adminStarted = false;
 let data = loadData();
